@@ -25,7 +25,7 @@ namespace Tasks.Controllers
         [HttpGet]
         public IEnumerable<Task> Get()
         {
-            return Context.Tasks               
+            return Context.Tasks
                 .Include(t => t.Comments);
             //return Context.Tasks.Include(t=>t.Comments).ThenInclude(l => l.Description);
         }
@@ -34,18 +34,16 @@ namespace Tasks.Controllers
         [HttpGet("filter")]
         public IEnumerable<Task> GetByFilter([FromBody] IntervalDate intervalDate)
         {
-
-            IQueryable<Task> list = Context.Tasks.Include(t => t.Comments);
-            IList<Task> result = new List<Task>() { };
-
-            foreach (Task task in list)
+            IQueryable<Task> result = Context.Tasks.Include(t => t.Comments);
+            if (intervalDate.start != null)
             {
-                if (task.Deadline >= intervalDate.start && task.Deadline <= intervalDate.end)
-                {
-                    System.Diagnostics.Debug.WriteLine(task.Status);
-                    result.Add(task);
-                }
+                result = result.Where(f => f.Deadline >= intervalDate.start);
             }
+            if (intervalDate.end != null)
+            {
+                result = result.Where(f => f.Deadline <= intervalDate.end);
+            }
+            //}
 
             foreach (Task task in result)
             {
@@ -75,9 +73,9 @@ namespace Tasks.Controllers
         // PUT: api/Task/5
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Task task)
-        {                        
+        {
             var existing = Context.Tasks.AsNoTracking().FirstOrDefault(t => t.Id == id);
-            
+
             if (existing == null)
             {
                 Context.Tasks.Add(task);
