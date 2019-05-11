@@ -25,7 +25,7 @@ namespace Tasks.Controllers
         [HttpGet]
         public IEnumerable<Task> Get()
         {
-            return Context.Tasks;
+            return Context.Tasks.Include(t=>t.Comments);
         }
 
         // GET: api/Task/filter
@@ -33,7 +33,7 @@ namespace Tasks.Controllers
         public IEnumerable<Task> GetByFilter([FromBody] IntervalDate intervalDate)
         {
 
-            DbSet<Task> list = Context.Tasks;
+            IQueryable<Task> list = Context.Tasks.Include(t=>t.Comments);
             IList<Task> result = new List<Task>() { };
 
             foreach (Task task in list)

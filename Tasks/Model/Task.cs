@@ -24,5 +24,6 @@ namespace Tasks.Model
         public Importance Imp { get; set; }
         public State Status { get; set; }
         public DateTime ClosedAt { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }

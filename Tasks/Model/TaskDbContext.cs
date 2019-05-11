@@ -12,5 +12,6 @@ namespace Tasks.Model
         {
         }
         public DbSet<Task> Tasks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }
