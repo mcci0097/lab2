@@ -35,7 +35,7 @@ namespace Tasks.Controllers
         public IEnumerable<Task> GetByFilter([FromBody] IntervalDate intervalDate)
         {
 
-            IQueryable<Task> list = Context.Tasks.Include(t=>t.Comments).Include(t=>t.Description);
+            IQueryable<Task> list = Context.Tasks.Include(t => t.Comments);
             IList<Task> result = new List<Task>() { };
 
             foreach (Task task in list)
