@@ -25,7 +25,9 @@ namespace Tasks.Controllers
         [HttpGet]
         public IEnumerable<Task> Get()
         {
-            return Context.Tasks.Include(t=>t.Comments).Include(t => t.Description);
+            return Context.Tasks               
+                .Include(t => t.Comments);
+            //return Context.Tasks.Include(t=>t.Comments).ThenInclude(l => l.Description);
         }
 
         // GET: api/Task/filter
