@@ -40,7 +40,7 @@ namespace Tasks.Controllers
 
             foreach (Task task in list)
             {
-                if (task.Deadline > intervalDate.start && task.Deadline < intervalDate.end)
+                if (task.Deadline >= intervalDate.start && task.Deadline <= intervalDate.end)
                 {
                     System.Diagnostics.Debug.WriteLine(task.Status);
                     result.Add(task);
