@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Tasks.Model;
+using Tasks.Services;
 
 namespace Tasks.Controllers
 {
@@ -13,103 +14,131 @@ namespace Tasks.Controllers
     [ApiController]
     public class TaskController : ControllerBase
     {
-        private TaskDbContext context;
-        public TaskDbContext Context { get => context; set => context = value; }
+        private ITaskService taskService;
 
-        public TaskController(TaskDbContext context)
+        public TaskController(ITaskService taskService)
         {
-            this.context = context;
+            this.taskService = taskService;
         }
 
-        // GET: api/Task
+        /// <summary>
+        /// Gets all elements
+        /// </summary>
+        /// <returns>A list of all elements</returns>
         [HttpGet]
         public IEnumerable<Task> Get()
         {
-            return Context.Tasks
-                .Include(t => t.Comments);
-            //return Context.Tasks.Include(t=>t.Comments).ThenInclude(l => l.Description);
+            return taskService.GetAll();
         }
 
-        // GET: api/Task/filter
+        /// <summary>
+        /// Gets all tasks with filter
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /tasks
+        ///     {
+        ///         {
+        ///             "start": "2019-06-14T23:57:19",
+        ///             "end": "2019-06-14T23:57:19"
+        ///         }   
+        ///     }
+        ///</remarks>
+        /// <param name="intervalDate">Contains start and end date</param>
+        /// <returns>A list of Task objects by filter</returns>
         [HttpGet("filter")]
         public IEnumerable<Task> GetByFilter([FromBody] IntervalDate intervalDate)
         {
-            IQueryable<Task> result = Context.Tasks.Include(t => t.Comments);
-            if (intervalDate.start != null)
-            {
-                result = result.Where(f => f.Deadline >= intervalDate.start);
-            }
-            if (intervalDate.end != null)
-            {
-                result = result.Where(f => f.Deadline <= intervalDate.end);
-            }
-            //}
-
-            foreach (Task task in result)
-            {
-                System.Diagnostics.Debug.WriteLine(task.Title);
-            }
-            System.Diagnostics.Debug.WriteLine("end");
-
-            return result;
+            return taskService.GetAllByFilter(intervalDate);
         }
 
-        // GET: api/Task/5
+        //[HttpGet("comments")]
+        //public IEnumerable<CommentFilterDTO> GetCommentsByFilter([FromQuery]String filter) {
+        //    return taskService.GetCommentsByFilter(filter);
+        //}
+
+
+        /// <summary>
+        /// Gets all tasks after id
+        /// </summary>
+        /// <param name="id">Optional, find tasks after id</param>
+        /// <returns>A list of task objects </returns>
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
-        }
-
-        // POST: api/Task
-        [HttpPost]
-        public IActionResult Post([FromBody] Task value)
-        {
-            Context.Tasks.Add(value);
-            Context.SaveChanges();
+            var found = taskService.GetById(id);
+            if (found == null)
+            {
+                return NotFound();
+            }
             return Ok();
         }
 
-        // PUT: api/Task/5
+
+        /// <summary>
+        /// Adds a new task 
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /tasks
+        ///     {
+        ///             "id": 1,
+        ///             "title": "string",
+        ///             "description": "string",
+        ///             "added": "2019-05-11T03:59:24.3376595",
+        ///             "deadline": "2019-06-15T03:59:24.3407304",
+        ///             "important": 2,
+        ///             "state": 0,
+        ///             "closeAt": "2019-06-15T03:59:24.341252",
+        ///             "comments": [
+        ///   	                {
+        ///  	                    "id": 1,
+        ///	                        "text": "string",
+        ///	                        "important": true
+        ///                      }
+        ///             ]
+        ///     }
+        ///</remarks>
+        /// <param name="task">Optional,Add a new task to the fields</param>
+        [ProducesResponseType(StatusCodes.Status418ImATeapot)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost]
+        public void Post([FromBody] Task task)
+        {
+            taskService.CreateTask(task);
+        }
+
+
+        /// <summary>
+        /// Updating a task
+        /// </summary>
+        /// <param name="id">Specify the id to be modified</param>
+        /// <param name="task">Specify task object in JSON format </param>
+        /// <returns>Returns the modified object</returns>
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Task task)
         {
-            var existing = Context.Tasks.AsNoTracking().FirstOrDefault(t => t.Id == id);
-
-            if (existing == null)
-            {
-                Context.Tasks.Add(task);
-                Context.SaveChanges();
-                return Ok(task);
-            }
-            task.Id = id;
-            DateTime dateToSet = DateTime.Now;
-
-            if (task.Status.Equals(Task.State.Closed))
-            {
-                task.ClosedAt = dateToSet;
-            }
-            if (existing.Status.Equals(Task.State.Closed) && !task.Status.Equals(Task.State.Closed))
-            {
-                task.ClosedAt = DateTime.MinValue;
-            }
-            Context.Tasks.Update(task);
-            Context.SaveChanges();
-            return Ok(task);
+            var result = taskService.UpInsert(id, task);
+            return Ok(result);
         }
 
-        // DELETE: api/ApiWithActions/5
+
+        /// <summary>
+        /// Deleting a task by id
+        /// </summary>
+        /// <param name="id">Specify id in URL to delete</param>
+        /// <returns>Remove the task object from the list</returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var existing = Context.Tasks.FirstOrDefault(product => product.Id == id);
+            var existing = taskService.Delete(id);
             if (existing == null)
             {
                 return NotFound();
             }
-            Context.Tasks.Remove(existing);
-            Context.SaveChanges();
-            return Ok();
+            return Ok(existing);
         }
     }
 }
