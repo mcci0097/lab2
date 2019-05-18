@@ -26,6 +26,8 @@ namespace Tasks.Controllers
         /// </summary>
         /// <param name="filter">The keyword used to search by</param>
         /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         public IEnumerable<CommentFilterDTO> GetCommentsByFilter([FromQuery]String filter)
         {

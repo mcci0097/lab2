@@ -15,7 +15,7 @@ namespace Tasks.Services
         Task CreateTask(Task task);
         Task UpInsert(int id, Task task);
         Task Delete(int id);
-        IEnumerable<CommentFilterDTO> GetCommentsByFilter(String stringToSearch);
+        //IEnumerable<CommentFilterDTO> GetCommentsByFilter(String stringToSearch);
     }
 
     public class TaskService : ITaskService
@@ -101,7 +101,7 @@ namespace Tasks.Services
             }
             if (existing.Status.Equals(Task.State.Closed) && !task.Status.Equals(Task.State.Closed))
             {
-                task.ClosedAt = DateTime.MinValue;
+                task.ClosedAt = null;
 
             }
             context.Tasks.Update(task);
@@ -109,29 +109,29 @@ namespace Tasks.Services
             return task;
         }
 
-        public IEnumerable<CommentFilterDTO> GetCommentsByFilter(String stringToSearch)
-        {
+        //public IEnumerable<CommentFilterDTO> GetCommentsByFilter(String stringToSearch)
+        //{
 
-            IEnumerable<Task> all = context.Tasks.Include(t => t.Comments);
-            CommentFilterDTO commentFilterDTO = new CommentFilterDTO();
-            List<CommentFilterDTO> resultEnum = new List<CommentFilterDTO>();
-            foreach (Task task in all)
-            {
-                foreach (Comment comment in task.Comments)
-                {
-                    if (comment.Text.Contains(stringToSearch))
-                    {
-                        commentFilterDTO.Id = comment.Id;
-                        commentFilterDTO.Text = comment.Text;
-                        commentFilterDTO.Important = comment.Important;
-                        commentFilterDTO.TaskId = task.Id;
-                        resultEnum.Add(commentFilterDTO);
-                    }
-                }
-            }
-            IEnumerable<CommentFilterDTO> send = resultEnum;
-            return send;
-        }
+        //    IEnumerable<Task> all = context.Tasks.Include(t => t.Comments);
+        //    CommentFilterDTO commentFilterDTO = new CommentFilterDTO();
+        //    List<CommentFilterDTO> resultEnum = new List<CommentFilterDTO>();
+        //    foreach (Task task in all)
+        //    {
+        //        foreach (Comment comment in task.Comments)
+        //        {
+        //            if (comment.Text.Contains(stringToSearch))
+        //            {
+        //                commentFilterDTO.Id = comment.Id;
+        //                commentFilterDTO.Text = comment.Text;
+        //                commentFilterDTO.Important = comment.Important;
+        //                commentFilterDTO.TaskId = task.Id;
+        //                resultEnum.Add(commentFilterDTO);
+        //            }
+        //        }
+        //    }
+        //    IEnumerable<CommentFilterDTO> send = resultEnum;
+        //    return send;
+        //}
     }
 }
 

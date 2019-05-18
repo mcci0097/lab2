@@ -24,7 +24,7 @@ namespace Tasks.Services
         {
 
             IEnumerable<Task> all = context.Tasks.Include(t => t.Comments);
-            CommentFilterDTO commentFilterDTO = new CommentFilterDTO();
+            CommentFilterDTO commentFilterDTO;
             List<CommentFilterDTO> resultEnum = new List<CommentFilterDTO>();
             foreach (Task task in all)
             {
@@ -32,6 +32,7 @@ namespace Tasks.Services
                 {
                     if (comment.Text.Contains(stringToSearch))
                     {
+                        commentFilterDTO = new CommentFilterDTO();
                         commentFilterDTO.Id = comment.Id;
                         commentFilterDTO.Text = comment.Text;
                         commentFilterDTO.Important = comment.Important;

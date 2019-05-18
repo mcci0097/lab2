@@ -84,7 +84,6 @@ namespace Tasks.Controllers
         ///
         ///     POST /tasks
         ///     {
-        ///             "id": 1,
         ///             "title": "string",
         ///             "description": "string",
         ///             "added": "2019-05-11T03:59:24.3376595",
@@ -94,7 +93,6 @@ namespace Tasks.Controllers
         ///             "closeAt": "2019-06-15T03:59:24.341252",
         ///             "comments": [
         ///   	                {
-        ///  	                    "id": 1,
         ///	                        "text": "string",
         ///	                        "important": true
         ///                      }
@@ -102,7 +100,7 @@ namespace Tasks.Controllers
         ///     }
         ///</remarks>
         /// <param name="task">Optional,Add a new task to the fields</param>
-        [ProducesResponseType(StatusCodes.Status418ImATeapot)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         public void Post([FromBody] Task task)
@@ -114,6 +112,26 @@ namespace Tasks.Controllers
         /// <summary>
         /// Updating a task
         /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PUT /tasks
+        ///     {
+        ///             "title": "string",
+        ///             "description": "string",
+        ///             "added": "2019-05-11T03:59:24.3376595",
+        ///             "deadline": "2019-06-15T03:59:24.3407304",
+        ///             "important": 2,
+        ///             "state": 0,
+        ///             "closeAt": "2019-06-15T03:59:24.341252",
+        ///             "comments": [
+        ///   	                {
+        ///	                        "text": "string",
+        ///	                        "important": true
+        ///                      }
+        ///             ]
+        ///     }
+        ///</remarks>
         /// <param name="id">Specify the id to be modified</param>
         /// <param name="task">Specify task object in JSON format </param>
         /// <returns>Returns the modified object</returns>
